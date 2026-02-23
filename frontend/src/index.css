@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Theme tokens ─────────────────────────────────────────── */
+:root {
+  --c-canvas:    #0F172A;
+  --c-surface:   #090E1A;
+  --c-card:      #1E293B;
+  --c-border:    #334155;
+  --c-border-sm: #1B2434;
+}
+
+[data-theme="light"] {
+  --c-canvas:    #F1F5F9;
+  --c-surface:   #E2E8F0;
+  --c-card:      #FFFFFF;
+  --c-border:    #CBD5E1;
+  --c-border-sm: #E2E8F0;
+}
+
+/* ─── Light mode text overrides ────────────────────────────── */
+[data-theme="light"] .text-white      { color: #0F172A; }
+[data-theme="light"] .text-slate-100  { color: #0F172A; }
+[data-theme="light"] .text-slate-200  { color: #1E293B; }
+[data-theme="light"] .text-slate-300  { color: #334155; }
+[data-theme="light"] .text-slate-400  { color: #475569; }
+[data-theme="light"] .text-slate-500  { color: #64748B; }
+[data-theme="light"] .text-slate-600  { color: #64748B; }
+[data-theme="light"] .text-slate-700  { color: #94A3B8; }
+
+/* ─── Light mode placeholder overrides ─────────────────────── */
+[data-theme="light"] .placeholder-slate-500::placeholder { color: #94A3B8; }
+[data-theme="light"] .placeholder-slate-600::placeholder { color: #94A3B8; }
+[data-theme="light"] .placeholder-slate-700::placeholder { color: #94A3B8; }
+
+/* ─── Light mode background overrides ──────────────────────── */
+[data-theme="light"] .bg-slate-950\/80  { background-color: rgba(226,232,240,0.88); }
+[data-theme="light"] .bg-slate-900\/60  { background-color: rgba(241,245,249,0.90); }
+[data-theme="light"] .bg-slate-900\/50  { background-color: rgba(241,245,249,0.80); }
+[data-theme="light"] .bg-slate-900\/40  { background-color: rgba(241,245,249,0.70); }
+[data-theme="light"] .bg-slate-800\/80  { background-color: rgba(226,232,240,0.80); }
+[data-theme="light"] .bg-slate-800\/70  { background-color: rgba(226,232,240,0.70); }
+[data-theme="light"] .bg-slate-800\/60  { background-color: rgba(226,232,240,0.60); }
+[data-theme="light"] .bg-slate-800\/50  { background-color: rgba(226,232,240,0.60); }
+[data-theme="light"] .bg-slate-800\/40  { background-color: rgba(226,232,240,0.50); }
+[data-theme="light"] .bg-slate-800\/30  { background-color: rgba(226,232,240,0.40); }
+[data-theme="light"] .bg-slate-800      { background-color: #E2E8F0; }
+[data-theme="light"] .bg-slate-700\/80  { background-color: rgba(203,213,225,0.80); }
+[data-theme="light"] .bg-slate-700\/60  { background-color: rgba(203,213,225,0.60); }
+[data-theme="light"] .bg-slate-700\/50  { background-color: rgba(203,213,225,0.50); }
+[data-theme="light"] .bg-slate-700\/40  { background-color: rgba(203,213,225,0.40); }
+
+/* ─── Light mode border overrides ──────────────────────────── */
+[data-theme="light"] .border-slate-700      { border-color: #CBD5E1; }
+[data-theme="light"] .border-slate-700\/50  { border-color: rgba(203,213,225,0.50); }
+[data-theme="light"] .border-slate-700\/60  { border-color: rgba(203,213,225,0.60); }
+[data-theme="light"] .border-slate-800      { border-color: #E2E8F0; }
+
+/* ─── Light mode hover overrides ───────────────────────────── */
+[data-theme="light"] .hover\:bg-slate-800:hover      { background-color: #E2E8F0; }
+[data-theme="light"] .hover\:bg-slate-800\/70:hover  { background-color: rgba(226,232,240,0.70); }
+[data-theme="light"] .hover\:bg-slate-700\/50:hover  { background-color: rgba(203,213,225,0.50); }
+[data-theme="light"] .hover\:border-slate-600:hover  { border-color: #94A3B8; }
+[data-theme="light"] .hover\:border-slate-500\/60:hover { border-color: rgba(148,163,184,0.60); }
+[data-theme="light"] .hover\:text-slate-300:hover    { color: #334155; }
+[data-theme="light"] .hover\:text-slate-200:hover    { color: #1E293B; }
+[data-theme="light"] .hover\:text-white:hover        { color: #0F172A; }
+
+/* ─── Light mode shadow ─────────────────────────────────────── */
+[data-theme="light"] .shadow-xl                 { box-shadow: 0 8px 24px rgba(15,23,42,0.08), 0 2px 8px rgba(15,23,42,0.04); }
+[data-theme="light"] .shadow-slate-950\/40      { --tw-shadow-color: rgba(15,23,42,0.08); }
+
+/* ─── Light mode select / native element fixes ──────────────── */
+[data-theme="light"] select {
+  background-color: var(--c-card);
+  color: #1E293B;
+}
+[data-theme="light"] select option {
+  background-color: #FFFFFF;
+  color: #1E293B;
+}
+
+/* ─── Light mode additional solid background overrides ─────── */
+[data-theme="light"] .bg-slate-900   { background-color: var(--c-surface); }
+[data-theme="light"] .bg-slate-950   { background-color: var(--c-canvas); }
+
+/* ─── Light mode tooltip / popover text ─────────────────────── */
+[data-theme="light"] { --tooltip-text: #1E293B; }
+
+/* ─── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--c-card, #1e293b); }
+::-webkit-scrollbar-thumb { background: var(--c-border, #334155); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }

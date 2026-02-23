@@ -1,0 +1,31 @@
+Incident Report – INC-2024-0063
+Title: Kubernetes nodes NotReady – full cluster outage
+Severity: P0
+Date: 2024-12-02
+Duration: 1 hour 12 minutes
+
+Summary:
+All worker nodes in the staging cluster transitioned to NotReady state after a misconfigured DaemonSet was deployed, causing the kubelet on each node to crash.
+
+Timeline:
+14:05 – Deployment pipeline pushed a new DaemonSet for log-collector
+14:08 – Monitoring shows node count dropping: 8 of 8 nodes NotReady
+14:10 – All pods across all namespaces show Terminating or Unknown
+14:14 – Engineer identifies DaemonSet as the cause via kubectl describe node
+14:20 – Attempted kubectl delete daemonset log-collector — API server unresponsive
+14:35 – Cluster API server recovered after node restart via cloud console
+14:40 – kubectl delete daemonset log-collector executed successfully
+14:52 – Nodes begin recovering, kubelet restarting on each node
+15:17 – All nodes Ready, all workloads rescheduled
+
+Root Cause:
+The log-collector DaemonSet mounted /var/run/docker.sock with incorrect permissions and a bad entrypoint script that sent a SIGKILL to the kubelet process. This took down all nodes simultaneously.
+
+Resolution:
+Deleted the DaemonSet manually. Nodes self-recovered once the kubelet was no longer being killed. Cloud console node reboot was needed for API server recovery.
+
+Action Items:
+- Add OPA/Gatekeeper policy to prevent hostPath mounts of sensitive paths without approval
+- Require staging DaemonSet changes to go through manual approval gate in CI
+- Add node health check alert for more than 1 node NotReady simultaneously
+- Document runbook for cluster-level recovery procedures

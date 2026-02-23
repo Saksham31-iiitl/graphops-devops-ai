@@ -1,0 +1,57 @@
+Kubernetes Runbook – Pod Troubleshooting Guide
+
+OOMKilled Error
+When a pod is terminated with reason OOMKilled, the container exceeded its configured memory limit. The Linux OOM killer forcefully terminated the process.
+
+Diagnosis steps:
+1. Run: kubectl describe pod <pod-name> -n <namespace>
+2. Look for: Last State: Terminated, Reason: OOMKilled
+3. Check memory usage: kubectl top pod <pod-name> -n <namespace>
+4. Review resource limits: kubectl get pod <pod-name> -o yaml | grep -A4 resources
+
+Resolution:
+- Increase the memory limit in the pod spec under resources.limits.memory
+- Optimize application memory usage if possible
+- Consider using a Vertical Pod Autoscaler (VPA) to auto-tune limits
+- If using Java, set -Xmx flag to cap JVM heap within the container limit
+
+Example pod resource spec:
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+CrashLoopBackOff
+A pod in CrashLoopBackOff means the container keeps crashing and Kubernetes is backing off before restarting it again.
+
+Diagnosis steps:
+1. kubectl logs <pod-name> -n <namespace> --previous
+2. kubectl describe pod <pod-name> -n <namespace>
+3. Check events at the bottom of describe output
+
+Common causes:
+- Application crash on startup (missing config, env vars, secrets)
+- Liveness probe misconfigured causing premature kills
+- OOMKilled on startup before probe fires
+- Missing or wrong image tag
+
+Resolution:
+- Fix the application startup error shown in logs
+- Ensure all required environment variables and secrets are mounted
+- Adjust initialDelaySeconds on the liveness probe to give app time to start
+
+ImagePullBackOff
+Pod cannot pull the container image.
+
+Diagnosis:
+1. kubectl describe pod <pod-name> — look at Events section
+2. Verify image name and tag are correct
+3. Check imagePullSecrets if using a private registry
+
+Resolution:
+- Correct the image name/tag in deployment spec
+- Ensure the imagePullSecret is created and referenced correctly
+- Verify the registry is accessible from the cluster network

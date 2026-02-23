@@ -1,0 +1,29 @@
+Incident Report – INC-2024-0047
+Title: Production API pods OOMKilled – service degradation
+Severity: P1
+Date: 2024-11-14
+Duration: 47 minutes
+
+Summary:
+The payment-service pods in the production namespace were repeatedly killed by the OOM killer due to a memory leak introduced in release v2.3.1. This caused 503 errors for end users attempting to complete purchases.
+
+Timeline:
+09:12 – Alerts fired: payment-service error rate exceeded 5%
+09:15 – On-call engineer paged
+09:18 – kubectl get pods showed 3 of 5 pods in OOMKilled / CrashLoopBackOff
+09:22 – kubectl logs --previous showed heap memory exhaustion in Java service
+09:31 – Decision made to rollback to v2.3.0
+09:35 – kubectl rollout undo deployment/payment-service executed
+09:45 – All 5 pods healthy, error rate back to baseline
+09:59 – Incident closed
+
+Root Cause:
+A connection pool in v2.3.1 was not releasing database connections properly, causing heap memory to grow unboundedly. The pod memory limit of 512Mi was exceeded after approximately 30 minutes of traffic.
+
+Resolution:
+Rolled back to v2.3.0 via kubectl rollout undo. Hotfix branch created to patch connection pool leak.
+
+Action Items:
+- Add memory usage dashboard alert at 80% of limit threshold
+- Add integration test to detect connection pool exhaustion
+- Increase memory limit to 768Mi as short-term buffer

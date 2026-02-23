@@ -1,0 +1,47 @@
+Deployment Runbook – CI/CD Pipeline and Rollback Procedures
+
+Rolling Deployment
+Kubernetes performs rolling updates by default. New pods are created before old ones are terminated, ensuring zero downtime.
+
+To trigger a deployment update:
+kubectl set image deployment/<name> <container>=<image>:<tag> -n <namespace>
+
+Monitor rollout:
+kubectl rollout status deployment/<name> -n <namespace>
+
+Rollback a failed deployment:
+kubectl rollout undo deployment/<name> -n <namespace>
+
+To rollback to a specific revision:
+kubectl rollout history deployment/<name>
+kubectl rollout undo deployment/<name> --to-revision=<number>
+
+Deployment Stuck in Pending
+When pods stay in Pending state, they are waiting to be scheduled onto a node.
+
+Diagnosis:
+1. kubectl describe pod <pod-name> — check Events for scheduling errors
+2. Common messages: Insufficient cpu, Insufficient memory, No nodes available
+
+Resolution:
+- Scale up the node pool in your cloud provider
+- Reduce resource requests in the pod spec
+- Check if taints/tolerations are blocking scheduling
+- Check PodDisruptionBudgets that may be blocking evictions
+
+High Pod Restart Count
+If a pod's RESTARTS column is high in kubectl get pods output, the container is repeatedly crashing.
+
+Steps:
+1. kubectl logs <pod-name> --previous to see last crash logs
+2. kubectl describe pod <pod-name> to see exit codes and reasons
+3. Exit code 137 = OOMKilled, exit code 1 = application error, exit code 143 = SIGTERM
+
+Service Not Accessible
+If a service is unreachable from within or outside the cluster:
+
+1. Verify service exists: kubectl get svc -n <namespace>
+2. Check endpoints: kubectl get endpoints <service-name> -n <namespace>
+3. If endpoints are empty, the label selector on the service does not match any pods
+4. Test DNS resolution inside cluster: kubectl exec -it <pod> -- nslookup <service>.<namespace>
+5. Check NetworkPolicy resources that may be blocking traffic
